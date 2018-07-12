@@ -12,4 +12,7 @@ Have a great day!
   Yay!
 <<setsprite DialogueRunner neutral>>
 Bye!
+<<if $TestTrue is true>>
+	Test.
+<<endif>>
 ===

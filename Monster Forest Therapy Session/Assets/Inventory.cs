@@ -24,6 +24,7 @@ public class Inventory : MonoBehaviour {
     }
 
     public List<Item> items = new List<Item>();
+    [HideInInspector]
     public List<int> itemSerials = new List<int>();
 
     public bool Add (Item item)

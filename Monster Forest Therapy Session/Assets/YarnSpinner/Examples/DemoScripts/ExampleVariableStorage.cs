@@ -35,7 +35,7 @@ public class ExampleVariableStorage : VariableStorageBehaviour
 {
 
     /// Where we actually keeping our variables
-    Dictionary<string, Yarn.Value> variables = new Dictionary<string, Yarn.Value> ();
+    public Dictionary<string, Yarn.Value> variables = new Dictionary<string, Yarn.Value> ();
 
     /// A default value to apply when the object wakes up, or
     /// when ResetToDefaults is called
