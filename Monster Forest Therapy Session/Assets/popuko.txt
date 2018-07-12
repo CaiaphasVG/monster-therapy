@@ -1,0 +1,37 @@
+title: start
+---
+<<setsprite DialogueRunner neutral>>
+Hey! You there!
+<<setsprite DialogueRunner happy>>
+I love you!
+-> I don't!!.
+  <<setsprite DialogueRunner anger>>
+  Hey!!
+-> I love you too!!.
+  <<setsprite DialogueRunner glad>>
+  Yay!
+<<setsprite DialogueRunner neutral>>
+But anyway...
+How are you?
+
+[[Good|good]]
+[[Not Good|notGood]]
+===
+
+title: good
+---
+<<setsprite DialogueRunner neutral>>
+Oh, good!
+<<setsprite DialogueRunner glad>>
+I'm glad!
+<<change GM happy>>
+===
+
+title: notGood
+---
+<<setsprite DialogueRunner neutral>>
+Aw, shucks.
+<<setsprite DialogueRunner sad>>
+I'm sorry.
+<<change GM sad>>
+===

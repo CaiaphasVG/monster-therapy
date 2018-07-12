@@ -1,0 +1,15 @@
+title: startPop
+---
+<<setsprite DialogueRunner neutral>>
+Hey!!!
+<<setsprite DialogueRunner happy>>
+Have a great day!
+-> I hope you trip and fall!!.
+  <<setsprite DialogueRunner anger>>
+  Hey!!
+-> I hope you have a great day too!!.
+  <<setsprite DialogueRunner glad>>
+  Yay!
+<<setsprite DialogueRunner neutral>>
+Bye!
+===
