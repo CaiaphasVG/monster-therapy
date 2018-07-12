@@ -14,6 +14,8 @@ public class GM : MonoBehaviour {
     [HideInInspector]
     public int[] itemSerials;
     public List<int> itemSerialList = new List<int>();
+    public List<Item> items = new List<Item>();
+    public FindItem findItem;
 
     public void Awake()
     {
@@ -35,16 +37,33 @@ public class GM : MonoBehaviour {
 
     public void Load()
     {
+        itemSerialList.Clear();
+        inventory.items.Clear();
+        inventory.itemSerials.Clear();
+        int[] loadedItemSerials = SaveManager.LoadInventory();
+
+        itemSerialList.AddRange(loadedItemSerials);
+        //itemSerialList = inventory.itemSerials;
+        FindItem();
+
         float[] loadedStats = SaveManager.LoadPlayerPosition();
 
         playerPositionX = loadedStats[0];
         playerPositionY = loadedStats[1];
 
         player.UpdatePlayerPosLocal();
+    }
 
-        int[] loadedItemSerials = SaveManager.LoadInventory();
-
-        itemSerialList.AddRange(loadedItemSerials);
+    public void FindItem()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (itemSerialList[i] == findItem.items[j].itemSerial)
+                    inventory.Add(findItem.items[j]);
+            }
+        }
     }
 
     [YarnCommand("change")]
