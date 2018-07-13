@@ -13,3 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Popuko Sad
   icon: {fileID: 21300000, guid: 9772fe20e83c27744b360781519cbbe5, type: 3}
+  itemSerial: 0

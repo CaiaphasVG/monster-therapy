@@ -25,7 +25,11 @@ public class GM : MonoBehaviour {
     public GameObject[] itemsInScene;
     bool t = true;
     object value = true;
-    
+    public Camera cam;
+    Color happyColour = new Vector4(253, 253, 128, 255);
+    Color sadColour = new Vector4(70, 77, 148, 255);
+    Color angryColour = new Vector4(255, 64, 64, 255);
+
 
     public ExampleVariableStorage variableStorage; 
 
@@ -55,8 +59,6 @@ public class GM : MonoBehaviour {
         int[] loadedItemSerials = SaveManager.LoadInventory();
 
         itemSerialList.AddRange(loadedItemSerials);
-        Debug.Log(itemSerialList.Count);
-        //itemSerialList = inventory.itemSerials;
         FindItem();
         itemsInScene = findItem.FindItemsInScene(itemsInScene);
         ClearItems();
@@ -98,14 +100,31 @@ public class GM : MonoBehaviour {
     public void ChangeEmotion(string emotion)
     {
         if (emotion == "happy")
-            Debug.Log("We are happy!");
+            Happy();
         else if (emotion == "sad")
-            Debug.Log("We are sad");
+            Sad();
+        else if (emotion == "angry")
+            Angry();
     }
 
     public void SetVariable()
     {
         var v = new Yarn.Value(true);
         variableStorage.SetValue("$TestTrue", v);
+    }
+
+    public void Happy()
+    {
+        cam.backgroundColor = Color.yellow;
+    }
+
+    public void Sad()
+    {
+        cam.backgroundColor = sadColour;
+    }
+
+    public void Angry()
+    {
+        cam.backgroundColor = angryColour;
     }
 }
