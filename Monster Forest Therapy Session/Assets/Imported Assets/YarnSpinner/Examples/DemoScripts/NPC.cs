@@ -38,16 +38,16 @@ namespace Yarn.Unity.Example {
         [FormerlySerializedAs("startNode")]
         public string talkToNode = "";
 
+        public string dialougeSpeech = "";
+
         [Header("Optional")]
         public TextAsset scriptToLoad;
 
         public List<SpriteInfo> sprites = new List<SpriteInfo>();
 
-        // Use this for initialization
         void Start () {
             if (scriptToLoad != null) {
                 FindObjectOfType<Yarn.Unity.DialogueRunner>().AddScript(scriptToLoad);
-                //FindObjectOfType<ExampleDialogueUI>().LoadNPCSprites(sprites);
             }
 
         }

@@ -29,6 +29,7 @@ public class GM : MonoBehaviour {
     Color happyColour = new Vector4(253, 253, 128, 255);
     Color sadColour = new Vector4(70, 77, 148, 255);
     Color angryColour = new Vector4(255, 64, 64, 255);
+    public GameObject firstAreaBarrier;
 
 
     public ExampleVariableStorage variableStorage; 
@@ -116,6 +117,7 @@ public class GM : MonoBehaviour {
     public void Happy()
     {
         cam.backgroundColor = Color.yellow;
+        firstAreaBarrier.SetActive(false);
     }
 
     public void Sad()
