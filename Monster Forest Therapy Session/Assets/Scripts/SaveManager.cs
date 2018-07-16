@@ -6,8 +6,6 @@ using UnityEngine;
 
 public static class SaveManager {
 
-#region Save Player Position
-
     public static void SavePlayerPosition(GM gameMaster)
     {
         BinaryFormatter bf = new BinaryFormatter();
@@ -68,6 +66,36 @@ public static class SaveManager {
         }
     }
 
+    public static void SaveEmotion(GM gameMaster)
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream stream = new FileStream(Application.persistentDataPath + "/gamemaster.emo", FileMode.Create);
+
+        GameEmotion data = new GameEmotion(gameMaster);
+        bf.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static string LoadEmotion()
+    {
+        if (File.Exists(Application.persistentDataPath + "/gamemaster.emo"))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream stream = new FileStream(Application.persistentDataPath + "/gamemaster.emo", FileMode.Open);
+
+
+            GameEmotion data = bf.Deserialize(stream) as GameEmotion;
+
+            stream.Close();
+            return data.gameEmotion;
+        }
+        else
+        {
+            Debug.LogError("No save file found");
+            return null;
+        }
+    }
+
 }
 
 [System.Serializable]
@@ -100,5 +128,14 @@ public class PlayerInventoryData {
     }
 }
 
-#endregion
+[System.Serializable]
+public class GameEmotion
+{
+    [HideInInspector]
+    public string gameEmotion;
 
+    public GameEmotion(GM gamemaster)
+    {
+        gameEmotion = gamemaster.gameEmotion;
+    }
+}

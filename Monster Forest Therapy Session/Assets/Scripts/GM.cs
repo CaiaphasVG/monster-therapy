@@ -5,6 +5,8 @@ using Yarn.Unity;
 
 public class GM : MonoBehaviour {
 
+#region Variables 
+
     public Inventory inventory;
     public PlayerMovement player;
     [HideInInspector]
@@ -30,9 +32,11 @@ public class GM : MonoBehaviour {
     Color sadColour = new Vector4(70, 77, 148, 255);
     Color angryColour = new Vector4(255, 64, 64, 255);
     public GameObject firstAreaBarrier;
+    public string gameEmotion = "";
+    public ExampleVariableStorage variableStorage;
+    public GameObject gate;
 
-
-    public ExampleVariableStorage variableStorage; 
+    #endregion
 
     public void Awake()
     {
@@ -46,14 +50,19 @@ public class GM : MonoBehaviour {
         itemSerials = inventory.itemSerials.ToArray();
 	}
 
+#region Saving and Loading
+
     public void Save()
     {
         SaveManager.SavePlayerPosition(this);
         SaveManager.SaveInventory(this);
+        SaveManager.SaveEmotion(this);
     }
 
     public void Load()
     {
+        ChangeEmotion(SaveManager.LoadEmotion());
+
         itemSerialList.Clear();
         inventory.items.Clear();
         inventory.itemSerials.Clear();
@@ -97,6 +106,8 @@ public class GM : MonoBehaviour {
         }
     }
 
+    #endregion
+
     [YarnCommand("change")]
     public void ChangeEmotion(string emotion)
     {
@@ -118,15 +129,23 @@ public class GM : MonoBehaviour {
     {
         cam.backgroundColor = Color.yellow;
         firstAreaBarrier.SetActive(false);
+        gameEmotion = "happy";
     }
 
     public void Sad()
     {
-        cam.backgroundColor = sadColour;
+        cam.backgroundColor = Color.blue;
+        gameEmotion = "sad";
     }
 
     public void Angry()
     {
-        cam.backgroundColor = angryColour;
+        cam.backgroundColor = Color.red;
+        gameEmotion = "angry";
+    }
+
+    public void OpenGate()
+    {
+        gate.SetActive(false);
     }
 }
