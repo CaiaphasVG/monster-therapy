@@ -61,6 +61,8 @@ namespace Yarn.Unity.Example {
 
         private bool skipText = false;
 
+        private string dialogueSound;
+
         /// A UI element that appears after lines have finished appearing
         public GameObject continuePrompt;
 
@@ -113,7 +115,7 @@ namespace Yarn.Unity.Example {
                 foreach (char c in line.text)
                 {
                     stringBuilder.Append(c);
-                    audioManager.PlaySound("rupert");
+                    audioManager.PlaySound(dialogueSound);
                     lineText.text = stringBuilder.ToString();
                     yield return new WaitForSeconds(textSpeed);
                     if (skipText == true)
@@ -269,6 +271,11 @@ namespace Yarn.Unity.Example {
         public void ClearNPCSprites()
         {
             characterSprites.Clear();
+        }
+
+        public void AddDialougeSpeech(string sound)
+        {
+            dialogueSound = sound;
         }
     }
 

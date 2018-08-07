@@ -6,6 +6,7 @@ public class FindItem : MonoBehaviour {
 
     [HideInInspector]
     public List<Item> items = new List<Item>();
+    [HideInInspector]
     public GameObject[] itemsInScene;
 
     public GameObject[] FindItemsInScene(GameObject[] itemsInScene)

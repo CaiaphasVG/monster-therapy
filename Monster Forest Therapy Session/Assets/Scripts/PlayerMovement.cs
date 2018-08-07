@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour {
     private int runningSpeed = 2;
     public float interactionRadius = 2f;
     private string npcNameTalkingTo;
+    private string npcSpeech;
     public GM gm;
 
     // Use this for initialization
@@ -56,6 +57,7 @@ public class PlayerMovement : MonoBehaviour {
         var allParticipants = new List<NPC>(FindObjectsOfType<NPC>());
         var targetNPC = allParticipants.Find(delegate (NPC p) {
             npcNameTalkingTo = p.characterName;
+            npcSpeech = p.dialougeSpeech;
             FindObjectOfType<ExampleDialogueUI>().LoadNPCSprites(p.sprites);
             return string.IsNullOrEmpty(p.talkToNode) == false && // has a conversation node?
             (p.transform.position - this.transform.position)// is in range?
@@ -66,6 +68,7 @@ public class PlayerMovement : MonoBehaviour {
             // Kick off the dialogue at this node.
             FindObjectOfType<DialogueRunner>().StartDialogue(targetNPC.talkToNode);
             FindObjectOfType<DialogueRunner>().AddName(npcNameTalkingTo);
+            FindObjectOfType<ExampleDialogueUI>().AddDialougeSpeech(npcSpeech);
         }
     }
 
@@ -78,7 +81,8 @@ public class PlayerMovement : MonoBehaviour {
             (i.transform.position - this.transform.position)
             .magnitude <= interactionRadius;
         });
-        if (targetItem != null && targetItem.hasInteracted == false)
+        if (targetItem != null && targetItem.hasInteracted == false
+            )
             targetItem.Interact();
     }
 

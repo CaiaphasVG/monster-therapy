@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Yarn.Unity;
 
 public class GM : MonoBehaviour {
@@ -35,12 +36,28 @@ public class GM : MonoBehaviour {
     public string gameEmotion = "";
     public ExampleVariableStorage variableStorage;
     public GameObject gate;
+    public GameObject saveUI;
+    public int sceneIndex;
+    public bool hasLoaded;
+    public SaveLoadManager saveLoadManager;
 
     #endregion
 
-    public void Awake()
+    private void Awake()
     {
-
+        saveLoadManager = SaveLoadManager.instance;
+        saveLoadManager.gm = this;
+        if(saveLoadManager.hasLoadedScene == true)
+        {
+            OnSceneLoaded();
+        } else if (saveLoadManager.hasLoadedScene == false)
+        {
+            if (SceneManager.GetActiveScene().buildIndex == SaveManager.LoadScene())
+            {
+                if (SaveManager.HasLoadedSceneReturn() == true)
+                    OnSceneLoaded();
+            }
+        } 
     }
 
     void Update () {
@@ -54,15 +71,36 @@ public class GM : MonoBehaviour {
 
     public void Save()
     {
+        sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SaveManager.SaveScene(this);
         SaveManager.SavePlayerPosition(this);
         SaveManager.SaveInventory(this);
         SaveManager.SaveEmotion(this);
+        saveUI.SetActive(false);
     }
 
     public void Load()
     {
-        ChangeEmotion(SaveManager.LoadEmotion());
+        hasLoaded = true;
+        SaveManager.HasLoadedSceneCheck(this);
+        StartCoroutine(LoadAsynchronously());
+    }
 
+    IEnumerator LoadAsynchronously()
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(SaveManager.LoadScene());
+
+        while (!operation.isDone)
+        {
+            Debug.Log(operation.progress);
+
+            yield return null;
+        }
+    }
+
+    void OnSceneLoaded()
+    {
+        ChangeEmotion(SaveManager.LoadEmotion());
         itemSerialList.Clear();
         inventory.items.Clear();
         inventory.itemSerials.Clear();
@@ -79,6 +117,11 @@ public class GM : MonoBehaviour {
         playerPositionY = loadedStats[1];
 
         player.UpdatePlayerPosLocal();
+        saveUI.SetActive(false);
+        hasLoaded = false;
+        saveLoadManager.hasLoadedScene = false;
+        SaveManager.HasLoadedSceneCheck(this);
+        
     }
 
     public void FindItem()
@@ -119,10 +162,13 @@ public class GM : MonoBehaviour {
             Angry();
     }
 
-    public void SetVariable()
+    public void ResetEmotions()
     {
-        var v = new Yarn.Value(true);
-        variableStorage.SetValue("$TestTrue", v);
+        var True = new Yarn.Value(true);
+        var False = new Yarn.Value(false);
+        variableStorage.SetValue("$Happy", False);
+        variableStorage.SetValue("$Sad", False);
+        variableStorage.SetValue("$Angry", False);
     }
 
     public void Happy()
@@ -130,18 +176,24 @@ public class GM : MonoBehaviour {
         cam.backgroundColor = Color.yellow;
         firstAreaBarrier.SetActive(false);
         gameEmotion = "happy";
+        ResetEmotions();
+        variableStorage.SetValue("$Happy", new Yarn.Value(true));
     }
 
     public void Sad()
     {
         cam.backgroundColor = Color.blue;
         gameEmotion = "sad";
+        ResetEmotions();
+        variableStorage.SetValue("$Sad", new Yarn.Value(true));
     }
 
     public void Angry()
     {
         cam.backgroundColor = Color.red;
         gameEmotion = "angry";
+        ResetEmotions();
+        variableStorage.SetValue("$Angry", new Yarn.Value(true));
     }
 
     public void OpenGate()

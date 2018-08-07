@@ -1,13 +1,16 @@
 title: start
 ---
 <<setsprite DialogueRunner neutral>>
+<<if $Happy is true>>
+	I am happy!
+<<endif>>
 Hey! You there!
 <<setsprite DialogueRunner happy>>
 I love you!
--> I don't!!.
+-> I don't!!
   <<setsprite DialogueRunner anger>>
   Hey!!
--> I love you too!!.
+-> I love you too!!
   <<setsprite DialogueRunner glad>>
   Yay!
 <<setsprite DialogueRunner neutral>>

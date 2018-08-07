@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Inventory : MonoBehaviour {
 
+    public GameObject itemPickupUI;
     public static Inventory instance;
 
     public int space = 20;
@@ -37,8 +39,9 @@ public class Inventory : MonoBehaviour {
 
         items.Add(item);
         itemSerials.Add(item.itemSerial);
+        StartCoroutine(DisplayPickup(item));
 
-        if(onItemChangedCallBack != null)
+        if (onItemChangedCallBack != null)
             onItemChangedCallBack.Invoke();
 
         return true;
@@ -51,6 +54,15 @@ public class Inventory : MonoBehaviour {
 
         if (onItemChangedCallBack != null)
             onItemChangedCallBack.Invoke();
+    }
+
+    IEnumerator DisplayPickup(Item item)
+    {
+        itemPickupUI.GetComponentInChildren<Text>().text = "You got: " + item.name + "!";
+        itemPickupUI.GetComponentInChildren<Image>().sprite = item.icon;
+        itemPickupUI.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        itemPickupUI.SetActive(false);
     }
 
 }
