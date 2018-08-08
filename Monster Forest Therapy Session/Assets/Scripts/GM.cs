@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Yarn.Unity;
+using UnityEngine.UI;
 
 public class GM : MonoBehaviour {
 
@@ -40,50 +41,64 @@ public class GM : MonoBehaviour {
     public int sceneIndex;
     public bool hasLoaded;
     public SaveLoadManager saveLoadManager;
+    public Text debugText;
+
+    float timer;
+    public int timePlayed;
 
     #endregion
 
     private void Awake()
     {
         saveLoadManager = SaveLoadManager.instance;
-        saveLoadManager.gm = this;
-        if(saveLoadManager.hasLoadedScene == true)
-        {
-            OnSceneLoaded();
-        } else if (saveLoadManager.hasLoadedScene == false)
-        {
-            if (SceneManager.GetActiveScene().buildIndex == SaveManager.LoadScene())
-            {
-                if (SaveManager.HasLoadedSceneReturn() == true)
-                    OnSceneLoaded();
-            }
-        } 
+        timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
+        Debug.Log(saveLoadManager.currentSaveSlot.timePlayed);
+        //saveLoadManager.gm = this;
+        //if(saveLoadManager.hasLoadedScene == true)
+        //{
+        //    OnSceneLoaded();
+        //} else if (saveLoadManager.hasLoadedScene == false)
+        //{
+        //    if (SceneManager.GetActiveScene().buildIndex == SaveManager.LoadScene())
+        //    {
+        //        if (SaveManager.HasLoadedSceneReturn() == true)
+        //            OnSceneLoaded();
+        //    }
+        //} 
     }
 
     void Update () {
+        timer += Time.deltaTime;
+        timePlayed = (int)(timer % 60);
+        debugText.text = timePlayed.ToString();
+
         xPos = player.transform.position.x;
         yPos = player.transform.position.y;
 
         itemSerials = inventory.itemSerials.ToArray();
+
 	}
 
 #region Saving and Loading
 
     public void Save()
     {
-        sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SaveManager.SaveScene(this);
-        SaveManager.SavePlayerPosition(this);
-        SaveManager.SaveInventory(this);
-        SaveManager.SaveEmotion(this);
-        saveUI.SetActive(false);
+        SaveManager.SaveTime(this);
+        Debug.Log("/saveTime" + saveLoadManager.currentSaveSlot.saveNumber + ".sav");
+
+        //sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        //SaveManager.SaveScene(this);
+        //SaveManager.SavePlayerPosition(this);
+        //SaveManager.SaveInventory(this);
+        //SaveManager.SaveEmotion(this);
+        //saveUI.SetActive(false);
     }
 
     public void Load()
     {
-        hasLoaded = true;
-        SaveManager.HasLoadedSceneCheck(this);
-        StartCoroutine(LoadAsynchronously());
+        //timePlayed = SaveManager.LoadSaveTime(saveLoadManager.currentSaveSlot);
+        //SaveManager.HasLoadedSceneCheck(this);
+        //StartCoroutine(LoadAsynchronously());
     }
 
     IEnumerator LoadAsynchronously()
@@ -119,7 +134,7 @@ public class GM : MonoBehaviour {
         player.UpdatePlayerPosLocal();
         saveUI.SetActive(false);
         hasLoaded = false;
-        saveLoadManager.hasLoadedScene = false;
+        //saveLoadManager.hasLoadedScene = false;
         SaveManager.HasLoadedSceneCheck(this);
         
     }
