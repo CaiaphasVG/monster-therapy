@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
+using UnityEditor;
 
 public static class SaveManager {
 
@@ -39,23 +40,59 @@ public static class SaveManager {
         }
     }
 
-    public static void SavePlayerPosition(GM gameMaster)
+    public static void SaveName()
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + "/pos.pos", FileMode.Create);
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveNam" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
 
-        PlayerPositionData data = new PlayerPositionData(gameMaster);
+        Name data = new Name(saveLoadManager.currentSaveSlot);
         bf.Serialize(stream, data);
         stream.Close();
     }
 
-    public static float[] LoadPlayerPosition()
+    public static string LoadName(SaveSlot saveSlot)
     {
-
-        if (File.Exists(Application.persistentDataPath + "/pos.pos"))
+        if (File.Exists(Application.persistentDataPath + ("/saveNam" + saveSlot.saveNumber + ".sav").ToString()))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + "/pos.pos", FileMode.Open);
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveNam" + saveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
+
+
+            Name data = bf.Deserialize(stream) as Name;
+
+            stream.Close();
+            return data.currentName;
+        }
+        else
+        {
+            Debug.LogError("No save file found");
+            return "";
+        }
+    }
+
+    public static void SavePlayerPosition(GM gameMaster)
+    {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/savePos" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
+
+        PlayerPositionData data = new PlayerPositionData(gameMaster);
+        bf.Serialize(stream, data);
+        stream.Close();
+
+        Debug.Log("Saved position to: " + saveLoadManager.currentSaveSlot.saveNumber + ".sav".ToString());
+    }
+
+    public static float[] LoadPlayerPosition()
+    {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        if (File.Exists(Application.persistentDataPath + ("/savePos" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString()))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/savePos" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
 
 
             PlayerPositionData data = bf.Deserialize(stream) as PlayerPositionData;
@@ -72,8 +109,10 @@ public static class SaveManager {
 
     public static void SaveInventory(GM gameMaster)
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + "/inv.inv", FileMode.Create);
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveInv" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
 
         PlayerInventoryData data = new PlayerInventoryData(gameMaster);
         bf.Serialize(stream, data);
@@ -82,11 +121,12 @@ public static class SaveManager {
 
     public static int[] LoadInventory()
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
 
-        if (File.Exists(Application.persistentDataPath + "/inv.inv"))
+        if (File.Exists(Application.persistentDataPath + ("/saveInv" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString()))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + "/inv.inv", FileMode.Open);
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveInv" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
 
 
             PlayerInventoryData data = bf.Deserialize(stream) as PlayerInventoryData;
@@ -103,20 +143,24 @@ public static class SaveManager {
 
     public static void SaveEmotion(GM gameMaster)
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + "/emo.emo", FileMode.Create);
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveEmo" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
 
         GameEmotion data = new GameEmotion(gameMaster);
         bf.Serialize(stream, data);
         stream.Close();
     }
 
-    public static string LoadEmotion()
+    public static string LoadEmotion(SaveSlot saveSlot)
     {
-        if (File.Exists(Application.persistentDataPath + "/emo.emo"))
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        if (File.Exists(Application.persistentDataPath + ("/saveEmo" + saveSlot.saveNumber + ".sav").ToString()))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + "/emo.emo", FileMode.Open);
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveEmo" + saveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
 
 
             GameEmotion data = bf.Deserialize(stream) as GameEmotion;
@@ -133,8 +177,10 @@ public static class SaveManager {
 
     public static void SaveScene(GM gameMaster)
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + "/sce.sce", FileMode.Create);
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveSce" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
 
         GameScene data = new GameScene(gameMaster);
         bf.Serialize(stream, data);
@@ -143,11 +189,12 @@ public static class SaveManager {
 
     public static int LoadScene()
     {
-        Debug.Log("/sce" + ".sav0");
-        if (File.Exists(Application.persistentDataPath + ("/sce.sce").ToString()))
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        if (File.Exists(Application.persistentDataPath + ("/saveSce" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString()))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + "/sce.sce", FileMode.Open);
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveSce" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
 
 
             GameScene data = bf.Deserialize(stream) as GameScene;
@@ -164,8 +211,10 @@ public static class SaveManager {
 
     public static void HasLoadedSceneCheck(GM gameMaster)
     {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + "/chk.chk", FileMode.Create);
+        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
 
         CheckLoadedScene data = new CheckLoadedScene(gameMaster);
         bf.Serialize(stream, data);
@@ -174,10 +223,12 @@ public static class SaveManager {
 
     public static bool HasLoadedSceneReturn()
     {
-        if (File.Exists(Application.persistentDataPath + "/chk.chk"))
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        if (File.Exists(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString()))
         {
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + "/chk.chk", FileMode.Open);
+            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
 
 
             CheckLoadedScene data = bf.Deserialize(stream) as CheckLoadedScene;
@@ -191,6 +242,21 @@ public static class SaveManager {
             return false;
         }
     }
+
+    public static void DeleteAll(int saveNumber)
+    {
+        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
+
+        File.Delete(Application.persistentDataPath + ("/savePos" + saveNumber + ".sav").ToString());
+        File.Delete(Application.persistentDataPath + ("/saveInv" + saveNumber + ".sav").ToString());
+        File.Delete(Application.persistentDataPath + ("/savePos" + saveNumber + ".sav").ToString());
+        File.Delete(Application.persistentDataPath + ("/saveEmo" + saveNumber + ".sav").ToString());
+        File.Delete(Application.persistentDataPath + ("/saveSce" + saveNumber + ".sav").ToString());
+        File.Delete(Application.persistentDataPath + ("/saveTime" + saveNumber + ".sav").ToString());
+
+        AssetDatabase.Refresh();
+    }
+
 }
 
 [System.Serializable]
@@ -266,5 +332,15 @@ public class TimePlayed
     public TimePlayed(GM gamemaster)
     {
         timePlayed = gamemaster.timePlayed;
+    }
+}
+
+public class Name
+{
+    public string currentName;
+
+    public Name(SaveSlot saveSlot)
+    {
+        currentName = saveSlot.saveName;
     }
 }

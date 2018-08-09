@@ -14,42 +14,25 @@ public class SaveLoadManager : MonoBehaviour {
     [HideInInspector]
     public bool filesAreEmpty;
     public bool isInGame;
+    public bool hasLoaded = false;
     public Button newGame;
     public Button loadGame;
     public GameObject loadGameUI;
     public GameObject newGameUI;
+    public GameObject nameInputPanel;
 
     // Use this for initialization
     void Awake () {
-        
-        int totalTimePlayed = 0;
-        
-        for (int i = 0; i < saveSlots.Count; i++)
-        {
-            saveSlots[i].timePlayed = SaveManager.LoadSaveTime(saveSlots[i]);
-            totalTimePlayed += saveSlots[i].timePlayed;
-        }
 
-        if (totalTimePlayed == 0)
-            filesAreEmpty = true;
-        else
-            filesAreEmpty = false;
-
-
-        if (SceneManager.GetActiveScene().name == "Load")
-            isInGame = false;
+        TimeCheck();
 
         try
         {
-            if (filesAreEmpty == true && isInGame == false)
-                loadGame.interactable = false;
-            else if (filesAreEmpty == false && isInGame == false)
-                loadGame.interactable = true;
+            nameInputPanel.GetComponentInChildren<InputField>().onEndEdit.AddListener(AcceptStringInput);
         } catch
         {
             Debug.Log("Main Scene Loaded");
         }
-
 
         DontDestroyOnLoad(this);
 
@@ -78,7 +61,10 @@ public class SaveLoadManager : MonoBehaviour {
             if(saveSlot.timePlayed > 0)
             {
                 loadSlotsButtons[i].gameObject.SetActive(true);
-                loadSlotsButtons[i].GetComponentInChildren<Text>().text = saveSlot.name;
+                loadSlotsButtons[i].transform.Find("Name").GetComponent<Text>().text = "Name: " + saveSlot.saveName;
+                loadSlotsButtons[i].transform.Find("Time").GetComponent<Text>().text = "Time played (seconds): " + saveSlot.timePlayed.ToString();
+                loadSlotsButtons[i].transform.Find("Emotion").GetComponent<Text>().text = "Emotion: " + SaveManager.LoadEmotion(saveSlot);
+
             }
             i++;
         }
@@ -97,25 +83,30 @@ public class SaveLoadManager : MonoBehaviour {
     public void LoadGameSelect1()
     {
         currentSaveSlot = saveSlots[0];
-        SceneManager.LoadScene(1);
+        hasLoaded = true;
+        SceneManager.LoadScene(SaveManager.LoadScene());
     }
 
     public void LoadGameSelect2()
     {
         currentSaveSlot = saveSlots[1];
-        SceneManager.LoadScene(1);
+        hasLoaded = true;
+        SceneManager.LoadScene(SaveManager.LoadScene());
     }
 
     public void LoadGameSelect3()
     {
         currentSaveSlot = saveSlots[2];
-        SceneManager.LoadScene(1);
+        hasLoaded = true;
+        SceneManager.LoadScene(SaveManager.LoadScene());
     }
 
     public void LoadGameSelect4()
     {
         currentSaveSlot = saveSlots[3];
-        SceneManager.LoadScene(1);
+        hasLoaded = true;
+        SceneManager.LoadScene(SaveManager.LoadScene());
+
     }
 
     #endregion
@@ -126,7 +117,7 @@ public class SaveLoadManager : MonoBehaviour {
     {
         if (filesAreEmpty == true)
         {
-            SceneManager.LoadScene(1);
+            nameInputPanel.SetActive(true);
             currentSaveSlot = saveSlots[0];
             isInGame = true;
         }
@@ -138,9 +129,18 @@ public class SaveLoadManager : MonoBehaviour {
             {
                 newSlotsButtons[i].gameObject.SetActive(true);
                 if (saveSlot.timePlayed > 0)
-                    newSlotsButtons[i].GetComponentInChildren<Text>().text = saveSlot.name + " Override";
+                {
+                    newSlotsButtons[i].transform.Find("Name").GetComponent<Text>().text = "Name: " + saveSlot.name + " Override";
+                    newSlotsButtons[i].transform.Find("Time").GetComponent<Text>().text = "Time played (seconds): " + saveSlot.timePlayed.ToString();
+                    newSlotsButtons[i].transform.Find("Emotion").GetComponent<Text>().text = "Emotion: " + SaveManager.LoadEmotion(saveSlot);
+
+                }
                 else
-                    newSlotsButtons[i].GetComponentInChildren<Text>().text = saveSlot.name;
+                {
+                    newSlotsButtons[i].transform.Find("Name").GetComponent<Text>().text = "Name: Empty";
+                    newSlotsButtons[i].transform.Find("Time").GetComponent<Text>().text = "Time played (seconds): 0" + saveSlot.timePlayed.ToString();
+                    newSlotsButtons[i].transform.Find("Emotion").GetComponent<Text>().text = "Emotion: None" + SaveManager.LoadEmotion(saveSlot);
+                }
                 i++;
             }
         }
@@ -158,34 +158,87 @@ public class SaveLoadManager : MonoBehaviour {
 
     public void NewGameSelect1()
     {
-        //todo erase save files
         currentSaveSlot = saveSlots[0];
+        SaveManager.DeleteAll(1);
         saveSlots[0].timePlayed = 0;
-        SceneManager.LoadScene(1);
-
+        nameInputPanel.SetActive(true);
     }
 
     public void NewGameSelect2()
     {
         currentSaveSlot = saveSlots[1];
+        SaveManager.DeleteAll(2);
         saveSlots[1].timePlayed = 0;
-        SceneManager.LoadScene(1);
+        nameInputPanel.SetActive(true);
     }
 
     public void NewGameSelect3()
     {
         currentSaveSlot = saveSlots[2];
+        SaveManager.DeleteAll(3);
         saveSlots[2].timePlayed = 0;
-        SceneManager.LoadScene(1);
+        nameInputPanel.SetActive(true);
     }
 
     public void NewGameSelect4()
     {
         currentSaveSlot = saveSlots[3];
+        SaveManager.DeleteAll(4);
         saveSlots[3].timePlayed = 0;
-        SceneManager.LoadScene(1);
+        nameInputPanel.SetActive(true);
     }
 
-#endregion
+    #endregion
+
+    public void DeleteAllSaves()
+    {
+        SaveManager.DeleteAll(0);
+        SaveManager.DeleteAll(1);
+        SaveManager.DeleteAll(2);
+        SaveManager.DeleteAll(3);
+
+        TimeCheck();
+    }
+
+    public void TimeCheck()
+    {
+        int totalTimePlayed = 0;
+
+        for (int i = 0; i < saveSlots.Count; i++)
+        {
+            saveSlots[i].timePlayed = SaveManager.LoadSaveTime(saveSlots[i]);
+            saveSlots[i].saveName = SaveManager.LoadName(saveSlots[i]);
+            totalTimePlayed += saveSlots[i].timePlayed;
+        }
+
+        if (totalTimePlayed == 0)
+            filesAreEmpty = true;
+        else
+            filesAreEmpty = false;
+
+
+        if (SceneManager.GetActiveScene().name == "Load")
+            isInGame = false;
+
+        try
+        {
+            if (filesAreEmpty == true && isInGame == false)
+                loadGame.interactable = false;
+            else if (filesAreEmpty == false && isInGame == false)
+                loadGame.interactable = true;
+        }
+        catch
+        {
+            Debug.Log("Main Scene Loaded");
+        }
+
+    }
+
+    void AcceptStringInput(string userInput)
+    {
+        currentSaveSlot.saveName = userInput;
+        SceneManager.LoadScene(1);
+        Debug.Log(currentSaveSlot);
+    }
 
 }

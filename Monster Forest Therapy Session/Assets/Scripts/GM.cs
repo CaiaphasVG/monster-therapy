@@ -51,8 +51,13 @@ public class GM : MonoBehaviour {
     private void Awake()
     {
         saveLoadManager = SaveLoadManager.instance;
+        if(saveLoadManager.hasLoaded == true && saveLoadManager.currentSaveSlot != null)
+        {
+            OnSceneLoaded();
+        }
         timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
-        Debug.Log(saveLoadManager.currentSaveSlot.timePlayed);
+        gameEmotion = "nuetral";
+        Debug.Log(saveLoadManager.currentSaveSlot.saveName);
         //saveLoadManager.gm = this;
         //if(saveLoadManager.hasLoadedScene == true)
         //{
@@ -84,14 +89,13 @@ public class GM : MonoBehaviour {
     public void Save()
     {
         SaveManager.SaveTime(this);
-        Debug.Log("/saveTime" + saveLoadManager.currentSaveSlot.saveNumber + ".sav");
-
-        //sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        //SaveManager.SaveScene(this);
-        //SaveManager.SavePlayerPosition(this);
-        //SaveManager.SaveInventory(this);
-        //SaveManager.SaveEmotion(this);
-        //saveUI.SetActive(false);
+        sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SaveManager.SaveScene(this);
+        SaveManager.SavePlayerPosition(this);
+        SaveManager.SaveInventory(this);
+        SaveManager.SaveEmotion(this);
+        SaveManager.SaveName();
+        saveUI.SetActive(false);
     }
 
     public void Load()
@@ -115,7 +119,7 @@ public class GM : MonoBehaviour {
 
     void OnSceneLoaded()
     {
-        ChangeEmotion(SaveManager.LoadEmotion());
+        ChangeEmotion(SaveManager.LoadEmotion(saveLoadManager.currentSaveSlot));
         itemSerialList.Clear();
         inventory.items.Clear();
         inventory.itemSerials.Clear();
@@ -132,10 +136,10 @@ public class GM : MonoBehaviour {
         playerPositionY = loadedStats[1];
 
         player.UpdatePlayerPosLocal();
-        saveUI.SetActive(false);
-        hasLoaded = false;
+        //saveUI.SetActive(false);
+        saveLoadManager.hasLoaded = false;
         //saveLoadManager.hasLoadedScene = false;
-        SaveManager.HasLoadedSceneCheck(this);
+        //SaveManager.HasLoadedSceneCheck(this);
         
     }
 
@@ -179,6 +183,7 @@ public class GM : MonoBehaviour {
 
     public void ResetEmotions()
     {
+        gameEmotion = "nuetral";
         var True = new Yarn.Value(true);
         var False = new Yarn.Value(false);
         variableStorage.SetValue("$Happy", False);
