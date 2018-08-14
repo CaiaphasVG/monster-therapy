@@ -9,8 +9,9 @@ public class GM : MonoBehaviour {
 
 #region Variables 
 
-    public Inventory inventory;
     public PlayerMovement player;
+
+    //Position data for saving and loading
     [HideInInspector]
     public float xPos;
     [HideInInspector]
@@ -21,27 +22,34 @@ public class GM : MonoBehaviour {
     public float playerPositionY;
     [HideInInspector]
     public int[] itemSerials;
+    
+    [Header("Inventory")]
+    public Inventory inventory;
+    //List of each items' unique serial
     [HideInInspector]
     public List<int> itemSerialList = new List<int>();
     [HideInInspector]
     public List<Item> items = new List<Item>();
     public FindItem findItem;
+    [HideInInspector]
     public GameObject[] itemsInScene;
+    [Header("Emotion Colours")]
+    public Color happyColour;
+    public Color sadColour;
+    public Color angryColour;
     bool t = true;
     object value = true;
     public Camera cam;
-    Color happyColour = new Vector4(253, 253, 128, 255);
-    Color sadColour = new Vector4(70, 77, 148, 255);
-    Color angryColour = new Vector4(255, 64, 64, 255);
     public GameObject firstAreaBarrier;
+    [HideInInspector]
     public string gameEmotion = "";
     public ExampleVariableStorage variableStorage;
     public GameObject gate;
     public GameObject saveUI;
-    public int sceneIndex;
-    public bool hasLoaded;
-    public SaveLoadManager saveLoadManager;
     public Text debugText;
+    [HideInInspector]
+    public int sceneIndex;
+    public SaveLoadManager saveLoadManager;
 
     float timer;
     public int timePlayed;
@@ -51,31 +59,20 @@ public class GM : MonoBehaviour {
     private void Awake()
     {
         saveLoadManager = SaveLoadManager.instance;
+        if (saveLoadManager = null)
+            saveUI.SetActive(false);
+
         if(saveLoadManager.hasLoaded == true && saveLoadManager.currentSaveSlot != null)
         {
             OnSceneLoaded();
         }
         timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
         gameEmotion = "nuetral";
-        Debug.Log(saveLoadManager.currentSaveSlot.saveName);
-        //saveLoadManager.gm = this;
-        //if(saveLoadManager.hasLoadedScene == true)
-        //{
-        //    OnSceneLoaded();
-        //} else if (saveLoadManager.hasLoadedScene == false)
-        //{
-        //    if (SceneManager.GetActiveScene().buildIndex == SaveManager.LoadScene())
-        //    {
-        //        if (SaveManager.HasLoadedSceneReturn() == true)
-        //            OnSceneLoaded();
-        //    }
-        //} 
     }
 
     void Update () {
         timer += Time.deltaTime;
         timePlayed = (int)(timer % 60);
-        debugText.text = timePlayed.ToString();
 
         xPos = player.transform.position.x;
         yPos = player.transform.position.y;
@@ -95,52 +92,28 @@ public class GM : MonoBehaviour {
         SaveManager.SaveInventory(this);
         SaveManager.SaveEmotion(this);
         SaveManager.SaveName();
-        saveUI.SetActive(false);
-    }
-
-    public void Load()
-    {
-        //timePlayed = SaveManager.LoadSaveTime(saveLoadManager.currentSaveSlot);
-        //SaveManager.HasLoadedSceneCheck(this);
-        //StartCoroutine(LoadAsynchronously());
-    }
-
-    IEnumerator LoadAsynchronously()
-    {
-        AsyncOperation operation = SceneManager.LoadSceneAsync(SaveManager.LoadScene());
-
-        while (!operation.isDone)
-        {
-            Debug.Log(operation.progress);
-
-            yield return null;
-        }
     }
 
     void OnSceneLoaded()
     {
         ChangeEmotion(SaveManager.LoadEmotion(saveLoadManager.currentSaveSlot));
+
+        //Clears inventory and other item lists
         itemSerialList.Clear();
         inventory.items.Clear();
         inventory.itemSerials.Clear();
         int[] loadedItemSerials = SaveManager.LoadInventory();
-
         itemSerialList.AddRange(loadedItemSerials);
         FindItem();
         itemsInScene = findItem.FindItemsInScene(itemsInScene);
         ClearItems();
 
         float[] loadedStats = SaveManager.LoadPlayerPosition();
-
         playerPositionX = loadedStats[0];
         playerPositionY = loadedStats[1];
-
         player.UpdatePlayerPosLocal();
-        //saveUI.SetActive(false);
-        saveLoadManager.hasLoaded = false;
-        //saveLoadManager.hasLoadedScene = false;
-        //SaveManager.HasLoadedSceneCheck(this);
-        
+
+        saveLoadManager.hasLoaded = false;     
     }
 
     public void FindItem()
@@ -193,7 +166,7 @@ public class GM : MonoBehaviour {
 
     public void Happy()
     {
-        cam.backgroundColor = Color.yellow;
+        cam.backgroundColor = happyColour;
         firstAreaBarrier.SetActive(false);
         gameEmotion = "happy";
         ResetEmotions();
@@ -202,7 +175,7 @@ public class GM : MonoBehaviour {
 
     public void Sad()
     {
-        cam.backgroundColor = Color.blue;
+        cam.backgroundColor = sadColour;
         gameEmotion = "sad";
         ResetEmotions();
         variableStorage.SetValue("$Sad", new Yarn.Value(true));
@@ -210,7 +183,7 @@ public class GM : MonoBehaviour {
 
     public void Angry()
     {
-        cam.backgroundColor = Color.red;
+        cam.backgroundColor = angryColour;
         gameEmotion = "angry";
         ResetEmotions();
         variableStorage.SetValue("$Angry", new Yarn.Value(true));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class SaveLoadManager : MonoBehaviour {
 
@@ -196,8 +197,9 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(1);
         SaveManager.DeleteAll(2);
         SaveManager.DeleteAll(3);
+        AssetDatabase.Refresh();
 
-        TimeCheck();
+        //loadGame.interactable = false;
     }
 
     public void TimeCheck()
@@ -207,7 +209,7 @@ public class SaveLoadManager : MonoBehaviour {
         for (int i = 0; i < saveSlots.Count; i++)
         {
             saveSlots[i].timePlayed = SaveManager.LoadSaveTime(saveSlots[i]);
-            saveSlots[i].saveName = SaveManager.LoadName(saveSlots[i]);
+            //saveSlots[i].saveName = SaveManager.LoadName(saveSlots[i]);
             totalTimePlayed += saveSlots[i].timePlayed;
         }
 
@@ -222,9 +224,9 @@ public class SaveLoadManager : MonoBehaviour {
 
         try
         {
-            if (filesAreEmpty == true && isInGame == false)
+            if (filesAreEmpty == true)
                 loadGame.interactable = false;
-            else if (filesAreEmpty == false && isInGame == false)
+            else if (filesAreEmpty == false)
                 loadGame.interactable = true;
         }
         catch

@@ -67,7 +67,7 @@ public static class SaveManager {
         else
         {
             Debug.LogError("No save file found");
-            return "";
+            return "Empty";
         }
     }
 
@@ -209,40 +209,6 @@ public static class SaveManager {
         }
     }
 
-    public static void HasLoadedSceneCheck(GM gameMaster)
-    {
-        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
-
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream stream = new FileStream(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Create);
-
-        CheckLoadedScene data = new CheckLoadedScene(gameMaster);
-        bf.Serialize(stream, data);
-        stream.Close();
-    }
-
-    public static bool HasLoadedSceneReturn()
-    {
-        SaveLoadManager saveLoadManager = SaveLoadManager.instance;
-
-        if (File.Exists(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString()))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream stream = new FileStream(Application.persistentDataPath + ("/saveChk" + saveLoadManager.currentSaveSlot.saveNumber + ".sav").ToString(), FileMode.Open);
-
-
-            CheckLoadedScene data = bf.Deserialize(stream) as CheckLoadedScene;
-
-            stream.Close();
-            return data.loaded;
-        }
-        else
-        {
-            Debug.LogError("No save file found");
-            return false;
-        }
-    }
-
     public static void DeleteAll(int saveNumber)
     {
         SaveLoadManager saveLoadManager = SaveLoadManager.instance;
@@ -314,17 +280,6 @@ public class GameScene
 }
 
 [System.Serializable]
-public class CheckLoadedScene
-{
-    public bool loaded;
-
-    public CheckLoadedScene(GM gamemaster)
-    {
-        loaded = gamemaster.hasLoaded;
-    }
-}
-
-[System.Serializable]
 public class TimePlayed
 {
     public int timePlayed;
@@ -335,6 +290,7 @@ public class TimePlayed
     }
 }
 
+[System.Serializable]
 public class Name
 {
     public string currentName;

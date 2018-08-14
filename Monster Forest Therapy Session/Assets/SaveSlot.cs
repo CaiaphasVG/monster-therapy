@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+[System.Serializable]
 [CreateAssetMenu(fileName = "New Save", menuName = "Save/Save Slots")]
 public class SaveSlot : ScriptableObject {
 
