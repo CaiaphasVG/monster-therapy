@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Name: Popuko Key
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: 0df6dfd15fa5bd1459516ba3b6633e52, type: 3}
-  itemSerial: 1
+  itemSerial: 3
   gm: {fileID: 0}
   gameMaster: {fileID: 1147287387604156, guid: 3a8dc942fdbb9004598bb8b2e7a4af03, type: 2}

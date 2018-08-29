@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Item
   - GM
+  - saveloadmanager
   layers:
   - Default
   - TransparentFX

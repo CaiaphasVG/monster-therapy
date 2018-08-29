@@ -2,19 +2,20 @@
 
 public class SavePoint : Interactable {
 
-    public GameObject saveUI;
+    private GM gm;
 
     public override void Interact()
     {
-        Save();
-
         base.Interact();
-
-        //hasInteracted = false;
+        hasInteracted = true;
+        Save();
     }
 
     public void Save()
     {
-        saveUI.SetActive(true);
+        Debug.Log("Save game");
+        gm = FindObjectOfType<GM>();
+        gm.currentSavePoint = this;
+        gm.saveUI.SetActive(true);
     }
 }

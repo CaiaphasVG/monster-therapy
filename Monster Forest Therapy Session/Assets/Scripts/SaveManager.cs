@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using UnityEngine;
-using UnityEditor;
 
 public static class SaveManager {
 
@@ -220,7 +219,7 @@ public static class SaveManager {
         File.Delete(Application.persistentDataPath + ("/saveSce" + saveNumber + ".sav").ToString());
         File.Delete(Application.persistentDataPath + ("/saveTime" + saveNumber + ".sav").ToString());
 
-        AssetDatabase.Refresh();
+        //AssetDatabase.Refresh();
     }
 
 }

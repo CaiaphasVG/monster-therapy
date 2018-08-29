@@ -12,7 +12,8 @@ Have a great day!
   Yay!
 <<setsprite DialogueRunner neutral>>
 Bye!
-<<if $TestTrue is true>>
-	Test.
+<<if $Happy is true>>
+	<<setsprite DialogueRunner happy>>
+	You beat Camoufleur!
 <<endif>>
 ===

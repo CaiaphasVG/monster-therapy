@@ -39,10 +39,11 @@ public class Inventory : MonoBehaviour {
 
         items.Add(item);
         itemSerials.Add(item.itemSerial);
-        StartCoroutine(DisplayPickup(item));
 
         if (onItemChangedCallBack != null)
             onItemChangedCallBack.Invoke();
+
+        //StartCoroutine(DisplayPickup(item));
 
         return true;
     }
@@ -56,13 +57,17 @@ public class Inventory : MonoBehaviour {
             onItemChangedCallBack.Invoke();
     }
 
-    IEnumerator DisplayPickup(Item item)
+    public IEnumerator DisplayPickup(Item item)
     {
         itemPickupUI.GetComponentInChildren<Text>().text = "You got: " + item.name + "!";
         itemPickupUI.GetComponentInChildren<Image>().sprite = item.icon;
         itemPickupUI.SetActive(true);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1.5f);
         itemPickupUI.SetActive(false);
     }
 
+    public void DisplayPickupCall(Item item)
+    {
+        StartCoroutine(DisplayPickup(item));
+    }
 }

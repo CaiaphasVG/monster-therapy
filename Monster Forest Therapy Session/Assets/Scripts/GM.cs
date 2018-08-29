@@ -30,6 +30,7 @@ public class GM : MonoBehaviour {
     public List<int> itemSerialList = new List<int>();
     [HideInInspector]
     public List<Item> items = new List<Item>();
+    [HideInInspector]
     public FindItem findItem;
     [HideInInspector]
     public GameObject[] itemsInScene;
@@ -51,23 +52,26 @@ public class GM : MonoBehaviour {
     public int sceneIndex;
     public SaveLoadManager saveLoadManager;
 
-    float timer;
+    [HideInInspector]
+    public float timer = 0;
     public int timePlayed;
 
     #endregion
 
+    public SavePoint currentSavePoint;
+
     private void Awake()
     {
         saveLoadManager = SaveLoadManager.instance;
-        if (saveLoadManager = null)
-            saveUI.SetActive(false);
-
-        if(saveLoadManager.hasLoaded == true && saveLoadManager.currentSaveSlot != null)
-        {
-            OnSceneLoaded();
-        }
-        timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
         gameEmotion = "nuetral";
+        if (saveLoadManager.hasLoaded == true)
+        {
+            if(saveLoadManager.currentSaveSlot != null)
+            {
+                OnSceneLoaded();
+                timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
+            }
+        }
     }
 
     void Update () {
@@ -92,6 +96,14 @@ public class GM : MonoBehaviour {
         SaveManager.SaveInventory(this);
         SaveManager.SaveEmotion(this);
         SaveManager.SaveName();
+        saveUI.SetActive(false);
+        currentSavePoint.hasInteracted = false;
+        currentSavePoint = null;
+    }
+
+    public void CallGM()
+    {
+        Debug.Log("Called from GM");
     }
 
     void OnSceneLoaded()
@@ -168,24 +180,24 @@ public class GM : MonoBehaviour {
     {
         cam.backgroundColor = happyColour;
         firstAreaBarrier.SetActive(false);
-        gameEmotion = "happy";
         ResetEmotions();
+        gameEmotion = "happy";
         variableStorage.SetValue("$Happy", new Yarn.Value(true));
     }
 
     public void Sad()
     {
         cam.backgroundColor = sadColour;
-        gameEmotion = "sad";
         ResetEmotions();
+        gameEmotion = "sad";
         variableStorage.SetValue("$Sad", new Yarn.Value(true));
     }
 
     public void Angry()
     {
         cam.backgroundColor = angryColour;
-        gameEmotion = "angry";
         ResetEmotions();
+        gameEmotion = "angry";
         variableStorage.SetValue("$Angry", new Yarn.Value(true));
     }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEditor;
 
 public class SaveLoadManager : MonoBehaviour {
 
@@ -23,7 +22,7 @@ public class SaveLoadManager : MonoBehaviour {
     public GameObject nameInputPanel;
 
     // Use this for initialization
-    void Awake () {
+    void Awake() {
 
         TimeCheck();
 
@@ -42,7 +41,6 @@ public class SaveLoadManager : MonoBehaviour {
             if (instance != this)
             {
                 Destroy(this.gameObject);
-                Debug.Log("Destroy");
             }
         }
         else
@@ -59,7 +57,7 @@ public class SaveLoadManager : MonoBehaviour {
         int i = 0;
         foreach (SaveSlot saveSlot in saveSlots)
         {
-            if(saveSlot.timePlayed > 0)
+            if (saveSlot.timePlayed > 0)
             {
                 loadSlotsButtons[i].gameObject.SetActive(true);
                 loadSlotsButtons[i].transform.Find("Name").GetComponent<Text>().text = "Name: " + saveSlot.saveName;
@@ -74,7 +72,7 @@ public class SaveLoadManager : MonoBehaviour {
     public void CloseLoadWindow()
     {
         loadGameUI.SetActive(false);
-        int i = 0; 
+        int i = 0;
         foreach (SaveSlot saveSlot in saveSlots)
         {
             loadSlotsButtons[i].gameObject.SetActive(false);
@@ -163,6 +161,7 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(1);
         saveSlots[0].timePlayed = 0;
         nameInputPanel.SetActive(true);
+        //CloseNewWindow();
     }
 
     public void NewGameSelect2()
@@ -171,6 +170,7 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(2);
         saveSlots[1].timePlayed = 0;
         nameInputPanel.SetActive(true);
+        //CloseNewWindow();
     }
 
     public void NewGameSelect3()
@@ -179,6 +179,7 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(3);
         saveSlots[2].timePlayed = 0;
         nameInputPanel.SetActive(true);
+        //CloseNewWindow();
     }
 
     public void NewGameSelect4()
@@ -187,6 +188,7 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(4);
         saveSlots[3].timePlayed = 0;
         nameInputPanel.SetActive(true);
+        //CloseNewWindow();
     }
 
     #endregion
@@ -197,8 +199,8 @@ public class SaveLoadManager : MonoBehaviour {
         SaveManager.DeleteAll(1);
         SaveManager.DeleteAll(2);
         SaveManager.DeleteAll(3);
-        AssetDatabase.Refresh();
-
+        //AssetDatabase.Refresh();
+        TimeCheck();
         //loadGame.interactable = false;
     }
 
@@ -243,4 +245,13 @@ public class SaveLoadManager : MonoBehaviour {
         Debug.Log(currentSaveSlot);
     }
 
+    public void CloseNameWindow()
+    {
+        nameInputPanel.SetActive(false);
+    }
+
+    public void TestCall()
+    {
+        Debug.Log("Called");
+    }
 }
