@@ -33,16 +33,13 @@ using System.Collections.Generic;
 namespace Yarn.Unity.Example {
     public class NPC : MonoBehaviour {
 
+        public bool isEnemy;
         public string characterName = "";
-
         [FormerlySerializedAs("startNode")]
         public string talkToNode = "";
-
         public string dialougeSpeech = "";
-
         [Header("Optional")]
         public TextAsset scriptToLoad;
-
         public List<SpriteInfo> sprites = new List<SpriteInfo>();
 
         void Start () {

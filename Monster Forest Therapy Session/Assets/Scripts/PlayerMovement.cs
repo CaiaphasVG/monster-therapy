@@ -6,13 +6,12 @@ using Yarn.Unity.Example;
 
 public class PlayerMovement : MonoBehaviour {
 
+
     Rigidbody2D rb;
     Animator anim;
     public int speed = 5;
     private int runningSpeed = 2;
     public float interactionRadius = 2f;
-    private string npcNameTalkingTo;
-    private string npcSpeech;
     public GM gm;
 
     // Use this for initialization
@@ -47,48 +46,14 @@ public class PlayerMovement : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            CheckForNearbyNPC();
-            CheckForNearbyInteracterble();
+            gm.CheckForNearbyNPC();
+            gm.CheckForNearbyInteracterble();
         }
     }
 
-    public void CheckForNearbyNPC()
+    public void UpdatePlayerPosLocal(float xPos, float yPos)
     {
-        var allParticipants = new List<NPC>(FindObjectsOfType<NPC>());
-        var targetNPC = allParticipants.Find(delegate (NPC p) {
-            npcNameTalkingTo = p.characterName;
-            npcSpeech = p.dialougeSpeech;
-            FindObjectOfType<ExampleDialogueUI>().LoadNPCSprites(p.sprites);
-            return string.IsNullOrEmpty(p.talkToNode) == false && // has a conversation node?
-            (p.transform.position - this.transform.position)// is in range?
-            .magnitude <= interactionRadius;
-        });
-        if (targetNPC != null)
-        {
-            // Kick off the dialogue at this node.
-            FindObjectOfType<DialogueRunner>().StartDialogue(targetNPC.talkToNode);
-            FindObjectOfType<DialogueRunner>().AddName(npcNameTalkingTo);
-            FindObjectOfType<ExampleDialogueUI>().AddDialougeSpeech(npcSpeech);
-        }
-    }
-
-    public void CheckForNearbyInteracterble()
-    {
-        var allItems = new List<Interactable>(FindObjectsOfType<Interactable>());
-        var targetItem = allItems.Find(delegate (Interactable i)
-        {
-            return string.IsNullOrEmpty(i.item.name) == false &&
-            (i.transform.position - this.transform.position)
-            .magnitude <= interactionRadius;
-        });
-        if (targetItem != null && targetItem.hasInteracted == false
-            )
-            targetItem.Interact();
-    }
-
-    public void UpdatePlayerPosLocal()
-    {
-        Vector2 playerPos = new Vector2(gm.playerPositionX, gm.playerPositionY);
+        Vector2 playerPos = new Vector2(xPos, yPos);
         transform.position = playerPos;
     }
 }

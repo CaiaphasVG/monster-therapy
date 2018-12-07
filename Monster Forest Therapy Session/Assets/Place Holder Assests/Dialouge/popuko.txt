@@ -1,4 +1,4 @@
-title: start
+title: notstart
 ---
 <<setsprite DialogueRunner neutral>>
 <<if $Happy is true>>
@@ -25,7 +25,7 @@ title: good
 ---
 <<setsprite DialogueRunner neutral>>
 Oh, good!
-<<setsprite DialogueRunner glad>>
+<<setsprite DialogueRunner glad>> 
 I'm glad!
 <<change GM happy>>
 ===
@@ -38,3 +38,14 @@ Aw, shucks.
 I'm sorry.
 <<change GM sad>>
 ===
+title: start
+---
+<<setsprite DialogueRunner anger>>
+Hey! 
+What you looking at?!
+Prepare to hurt!
+<<setsprite DialogueRunner sad>>
+...and I don't mean emotionally like I do.
+<<setsprite DialogueRunner anger>>
+<<enablebattleprompt DialogueRunner>>
+That all you got?!

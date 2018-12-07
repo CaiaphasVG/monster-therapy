@@ -3,18 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Yarn.Unity;
+using Yarn.Unity.Example;
 using UnityEngine.UI;
+
+[System.Serializable]
+public class PlayerData
+{
+    public int sceneIndex;
+    public int timePlayed;
+    public string playerName;
+    public string emotion;
+    public int[] itemSerials;
+    public float[] playerPosition;
+
+    public PlayerData (GM player)
+    {
+        sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        timePlayed = player.timePlayed;
+        playerName = player.saveLoadManager.currentSaveSlot.saveName;
+        emotion = player.gameEmotion;
+        itemSerials = player.itemSerials;
+
+        playerPosition = new float[2];
+        playerPosition[0] = player.xPos;
+        playerPosition[1] = player.yPos;
+
+    }
+}
 
 public class GM : MonoBehaviour {
 
 #region Variables 
 
     public PlayerMovement player;
+    public NPCBattleStats enemyStats;
+    public string npcNameTalkingTo;
+    public string npcSpeech;
 
     //Position data for saving and loading
-    [HideInInspector]
     public float xPos;
-    [HideInInspector]
     public float yPos;
     [HideInInspector]
     public float playerPositionX;
@@ -69,7 +96,6 @@ public class GM : MonoBehaviour {
             if(saveLoadManager.currentSaveSlot != null)
             {
                 OnSceneLoaded();
-                timer = (float)saveLoadManager.currentSaveSlot.timePlayed;
             }
         }
     }
@@ -82,50 +108,86 @@ public class GM : MonoBehaviour {
         yPos = player.transform.position.y;
 
         itemSerials = inventory.itemSerials.ToArray();
-
 	}
 
-#region Saving and Loading
+    public void CheckForNearbyNPC()
+    {
+        var allParticipants = new List<NPC>(FindObjectsOfType<NPC>());
+        var targetNPC = allParticipants.Find(delegate (NPC p) {
+            npcNameTalkingTo = p.characterName;
+            npcSpeech = p.dialougeSpeech;
+            FindObjectOfType<DialogueUI>().LoadNPCSprites(p.sprites);
+            return string.IsNullOrEmpty(p.talkToNode) == false && // has a conversation node?
+            (p.transform.position - player.transform.position)// is in range?
+            .magnitude <= player.interactionRadius;
+        });
+        if (targetNPC != null)
+        {
+            // Kick off the dialogue at this node.
+            FindObjectOfType<DialogueRunner>().StartDialogue(targetNPC.talkToNode);
+            FindObjectOfType<DialogueRunner>().AddName(npcNameTalkingTo);
+            FindObjectOfType<DialogueUI>().AddDialougeSpeech(npcSpeech);
+            if (targetNPC.isEnemy == true)
+            {
+                enemyStats = targetNPC.gameObject.GetComponent<NPCBattleStats>();
+            }
+        }
+        else
+            Debug.LogError("targetNPC is null");
+    }
+
+    public void CheckForNearbyInteracterble()
+    {
+        var allItems = new List<Interactable>(FindObjectsOfType<Interactable>());
+        var targetItem = allItems.Find(delegate (Interactable i)
+        {
+            return string.IsNullOrEmpty(i.item.name) == false &&
+            (i.transform.position - player.transform.position)
+            .magnitude <= player.interactionRadius;
+        });
+        if (targetItem != null && targetItem.hasInteracted == false
+            )
+            targetItem.Interact();
+    }
+
+    #region Saving and Loading
 
     public void Save()
     {
-        SaveManager.SaveTime(this);
-        sceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SaveManager.SaveScene(this);
-        SaveManager.SavePlayerPosition(this);
-        SaveManager.SaveInventory(this);
-        SaveManager.SaveEmotion(this);
-        SaveManager.SaveName();
+        Debug.Log(timePlayed);
+        SaveManager.SavePlayer(this);
+        //SaveManager.SaveTime(this);
+        //sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        //SaveManager.SaveScene(this);
+        //SaveManager.SavePlayerPosition(this);
+        //SaveManager.SaveInventory(this);
+        //SaveManager.SaveEmotion(this);
+        //SaveManager.SaveName();
         saveUI.SetActive(false);
         currentSavePoint.hasInteracted = false;
         currentSavePoint = null;
     }
 
-    public void CallGM()
-    {
-        Debug.Log("Called from GM");
-    }
-
     void OnSceneLoaded()
     {
-        ChangeEmotion(SaveManager.LoadEmotion(saveLoadManager.currentSaveSlot));
+        PlayerData data = SaveManager.LoadPlayer(saveLoadManager.currentSaveSlot);
+
+        ChangeEmotion(data.emotion);
 
         //Clears inventory and other item lists
         itemSerialList.Clear();
         inventory.items.Clear();
         inventory.itemSerials.Clear();
-        int[] loadedItemSerials = SaveManager.LoadInventory();
-        itemSerialList.AddRange(loadedItemSerials);
+        itemSerialList.AddRange(data.itemSerials);
         FindItem();
         itemsInScene = findItem.FindItemsInScene(itemsInScene);
         ClearItems();
 
-        float[] loadedStats = SaveManager.LoadPlayerPosition();
-        playerPositionX = loadedStats[0];
-        playerPositionY = loadedStats[1];
-        player.UpdatePlayerPosLocal();
+        player.UpdatePlayerPosLocal(data.playerPosition[0], data.playerPosition[1]);
 
-        saveLoadManager.hasLoaded = false;     
+        saveLoadManager.hasLoaded = false;
+        timer = (float)data.timePlayed;
+
     }
 
     public void FindItem()
@@ -154,6 +216,8 @@ public class GM : MonoBehaviour {
     }
 
     #endregion
+
+
 
     [YarnCommand("change")]
     public void ChangeEmotion(string emotion)

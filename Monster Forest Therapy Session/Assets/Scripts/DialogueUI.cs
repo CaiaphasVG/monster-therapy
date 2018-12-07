@@ -39,7 +39,7 @@ namespace Yarn.Unity.Example {
      * is that you provide the RunLine, RunOptions, RunCommand
      * and DialogueComplete coroutines; what they do is up to you.
      */
-    public class ExampleDialogueUI : Yarn.Unity.DialogueUIBehaviour
+    public class DialogueUI : Yarn.Unity.DialogueUIBehaviour
     {
 
         /// The object that contains the dialogue and the options.
@@ -47,6 +47,8 @@ namespace Yarn.Unity.Example {
          * disabled when it ends.
          */
         public GameObject dialogueContainer;
+
+        public GameObject battleContainer;
 
         public List<SpriteInfo> characterSprites = new List<SpriteInfo>();
 
@@ -62,6 +64,8 @@ namespace Yarn.Unity.Example {
         private bool skipText = false;
 
         private string dialogueSound;
+
+        public GM gm;
 
         /// A UI element that appears after lines have finished appearing
         public GameObject continuePrompt;
@@ -106,6 +110,11 @@ namespace Yarn.Unity.Example {
         /// Show a line of dialogue, gradually
         public override IEnumerator RunLine (Yarn.Line line)
         {
+            while(battleContainer.activeInHierarchy == true)
+            {
+                yield return null;
+            }
+
             // Show the text
             lineText.gameObject.SetActive (true);
 
@@ -261,6 +270,14 @@ namespace Yarn.Unity.Example {
             }
 
             displayImage.sprite = s;
+        }
+
+        [YarnCommand("enablebattleprompt")]
+        public void EnableBattlePrompt()
+        {
+            battleContainer.SetActive(!battleContainer.activeSelf);
+            dialogueContainer.transform.Find("Name Text").gameObject.SetActive(!battleContainer.activeSelf);
+            battleContainer.transform.Find("Battle Master").GetComponent<BattleMaster>().LoadMonstertats(gm.enemyStats);
         }
 
         public void LoadNPCSprites(List<SpriteInfo> sprites)
