@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class SavePoint : Interactable {
+public class SavePoint : Interactable
+{
 
     private GM gm;
 

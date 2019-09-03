@@ -1,0 +1,6 @@
+title: start
+---
+What's this? 
+Could it be the fabled holy grail?
+No, sadly. It's just a rock.
+===

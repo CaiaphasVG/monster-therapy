@@ -74,6 +74,7 @@ public class GM : MonoBehaviour {
     public ExampleVariableStorage variableStorage;
     public GameObject gate;
     public GameObject saveUI;
+    public GameObject currentItem;
     public Text debugText;
     [HideInInspector]
     public int sceneIndex;
@@ -127,6 +128,7 @@ public class GM : MonoBehaviour {
             FindObjectOfType<DialogueRunner>().StartDialogue(targetNPC.talkToNode);
             FindObjectOfType<DialogueRunner>().AddName(npcNameTalkingTo);
             FindObjectOfType<DialogueUI>().AddDialougeSpeech(npcSpeech);
+            FindObjectOfType<DialogueUIBehaviour>().npcTalkingTo = targetNPC;
             if (targetNPC.isEnemy == true)
             {
                 enemyStats = targetNPC.gameObject.GetComponent<NPCBattleStats>();
@@ -136,19 +138,23 @@ public class GM : MonoBehaviour {
             Debug.LogError("targetNPC is null");
     }
 
-    public void CheckForNearbyInteracterble()
-    {
-        var allItems = new List<Interactable>(FindObjectsOfType<Interactable>());
-        var targetItem = allItems.Find(delegate (Interactable i)
-        {
-            return string.IsNullOrEmpty(i.item.name) == false &&
-            (i.transform.position - player.transform.position)
-            .magnitude <= player.interactionRadius;
-        });
-        if (targetItem != null && targetItem.hasInteracted == false
-            )
-            targetItem.Interact();
-    }
+    //public void CheckForNearbyInteracterble()
+    //{
+    //    var allItems = new List<Interactable>(FindObjectsOfType<Interactable>());
+    //    var targetItem = allItems.Find(delegate (Interactable i)
+    //    {
+    //        return string.IsNullOrEmpty(i.item.name) == false &&
+    //        (i.transform.position - player.transform.position)
+    //        .magnitude <= player.interactionRadius;
+    //    });
+    //    if (targetItem != null && targetItem.hasInteracted == false)
+    //        targetItem.Interact();
+    //        currentItem = targetItem.gameObject;
+    //        FindObjectOfType<DialogueRunner>().StartDialogue(targetItem.talkToNode);
+    //        FindObjectOfType<DialogueUI>().displayImage.gameObject.SetActive(false);
+    //        FindObjectOfType<DialogueRunner>().AddName("");
+    //        FindObjectOfType<DialogueUI>().AddDialougeSpeech("rupert");
+    //}
 
     #region Saving and Loading
 

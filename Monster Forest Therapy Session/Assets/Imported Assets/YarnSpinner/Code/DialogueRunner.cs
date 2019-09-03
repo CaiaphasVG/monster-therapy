@@ -27,6 +27,8 @@ SOFTWARE.
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Yarn.Unity;
+using Yarn.Unity.Example;
 using System.Text.RegularExpressions;
 using CsvHelper;
 
@@ -72,6 +74,7 @@ namespace Yarn.Unity
 
         public bool automaticCommands = true;
 
+ 
         /// Our conversation engine
         /** Automatically created on first access
          */
@@ -151,7 +154,7 @@ namespace Yarn.Unity
 
         /// Add a TextAsset to a script
         public void AddScript(TextAsset asset) {
-            dialogue.LoadString(asset.text);
+
         }
 
         /// Loads a string table, replacing any existing strings with the same
@@ -202,6 +205,10 @@ namespace Yarn.Unity
         /// Start the dialogue from a given node
         public void StartDialogue (string startNode)
         {
+            if(FindObjectOfType<GM>().currentItem != null)
+            {
+                
+            }
 
             // Stop any processes that might be running already
             StopAllCoroutines ();
@@ -433,6 +440,8 @@ namespace Yarn.Unity
     /// Scripts that can act as the UI for the conversation should subclass this
     public abstract class DialogueUIBehaviour : MonoBehaviour
     {
+        public NPC npcTalkingTo;
+
         /// A conversation has started.
         public virtual IEnumerator DialogueStarted() {
             // Default implementation does nothing.
@@ -457,7 +466,10 @@ namespace Yarn.Unity
 
         /// The conversation has ended.
         public virtual IEnumerator DialogueComplete () {
-            // Default implementation does nothing.
+            // Default implementation does nothing
+
+            FindObjectOfType<DialogueUI>().displayImage.gameObject.SetActive(true);
+            //npcTalkingTo.Interact();
             yield break;
         }
 

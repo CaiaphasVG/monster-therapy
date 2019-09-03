@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour {
     Animator anim;
     public int speed = 5;
     private int runningSpeed = 2;
-    public float interactionRadius = 2f;
+    public float interactionRadius = 0.5f;
     public GM gm;
 
     // Use this for initialization
@@ -42,12 +42,17 @@ public class PlayerMovement : MonoBehaviour {
         } else
            anim.SetBool("isWalking", false);
 
+        if (Input.GetKey(KeyCode.LeftShift))
+            speed = 7;
+        else
+            speed = 5;
+
         rb.MovePosition(rb.position + movement * Time.deltaTime * speed);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             gm.CheckForNearbyNPC();
-            gm.CheckForNearbyInteracterble();
+            //gm.CheckForNearbyInteracterble();
         }
     }
 

@@ -34,6 +34,7 @@ namespace Yarn.Unity.Example {
     public class NPC : MonoBehaviour {
 
         public bool isEnemy;
+        public bool isItem;
         public string characterName = "";
         [FormerlySerializedAs("startNode")]
         public string talkToNode = "";
@@ -43,10 +44,12 @@ namespace Yarn.Unity.Example {
         public List<SpriteInfo> sprites = new List<SpriteInfo>();
 
         void Start () {
-            if (scriptToLoad != null) {
+            if (scriptToLoad != null)
+            {
                 FindObjectOfType<Yarn.Unity.DialogueRunner>().AddScript(scriptToLoad);
             }
-
+            else
+                Debug.Log("script not found");
         }
     }
 
